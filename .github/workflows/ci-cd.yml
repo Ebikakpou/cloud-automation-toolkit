@@ -1,37 +1,40 @@
-name: Cloud CI/CD
+name: CloudShift CI/CD
 
-on: { push: { branches: [main] } }
+on:
+  push:
+    branches: [main]
+
 jobs:
   build-test:
-
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
-
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
-        with: { python-version: '3.10' }
+        with:
+          python-version: '3.10'
+
       - name: Install pytest
         run: pip install pytest
+
       - name: Run tests
         run: pytest test_backup.py
 
-deploy:
+  deploy:
+    needs: build-test
+    runs-on: ubuntu-latest
 
-  needs: build-test
-  runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  steps:
-    - uses: actions/checkout@v4
-    - name: Deploy to EC2
-
-      uses: appleboy/ssh-action@v1
-      with:
-
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          cd ~/automation && git pull && python3 run_all.py
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/automation && git pull && python3 run_all.py
