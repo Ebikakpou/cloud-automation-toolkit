@@ -13,3 +13,14 @@ pipeline {
       }
     }
 
+   stage('Deploy') {
+
+      steps {
+        sh 'git pull'
+
+        sh 'python3 run_all.py'
+      }
+    }
+
+  }
+}
