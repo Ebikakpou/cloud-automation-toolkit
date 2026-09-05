@@ -1,0 +1,8 @@
+launch-wizard-1# terraform.tfvars.example — copy this to terraform.tfvars and fill in
+# your own values. terraform.tfvars is never committed to git (see
+# .gitignore) — it's specific to your AWS account and your machine.
+aws_region = "us-east-1"
+instance_type = "t2.micro"
+key_name = "cloudy-store-key" 
+environment = "dev"
+project_name = "cloudshift-store"
