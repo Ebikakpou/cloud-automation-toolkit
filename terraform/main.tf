@@ -1,4 +1,3 @@
-
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -13,7 +12,6 @@ data "aws_ami" "amazon_linux" {
     values = ["hvm"]
   }
 }
-
 
 resource "aws_security_group" "cloudshift_store" {
   name        = "${var.project_name}-${var.environment}-sg"
@@ -35,39 +33,56 @@ resource "aws_security_group" "cloudshift_store" {
     cidr_blocks = [var.allowed_ssh_cidr]
   }
 
+  ingress {
+    description = "Prometheus"
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Grafana"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-    }
+  }
 
-    tags = {
-        Name        = "${var.project_name}-${var.environment}-sg"
-        ManagedBy   = "Terraform"
-        Environment = var.environment
-        
-    }
-
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-sg"
+    ManagedBy   = "Terraform"
+    Environment = var.environment
+  }
 }
 
-    resource "aws_instance" "cloudshift_store" {
-        ami           = data.aws_ami.amazon_linux.id
-        instance_type = var.instance_type
-        key_name      = var.key_name
-        vpc_security_group_ids = [aws_security_group.cloudshift_store.id]
+resource "aws_instance" "cloudshift_store" {
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.cloudshift_store.id]
 
-        user_data = templatefile("${path.module}/user_data.sh", {
-            environment  = var.environment
-        })
+  root_block_device {
+    volume_size = 10
+    volume_type = "gp3"
+  }
 
-        tags = {
-            Name        = "${var.project_name}-${var.environment}"
-            ManagedBy   = "Terraform"
-            Environment = var.environment
-            project     = var.project_name
-        }
+  user_data = templatefile("${path.module}/user_data.sh", {
+    environment = var.environment
+  })
 
+  tags = {
+    Name        = "${var.project_name}-${var.environment}"
+    ManagedBy   = "Terraform"
+    Environment = var.environment
+    project     = var.project_name
+  }
 }
-
