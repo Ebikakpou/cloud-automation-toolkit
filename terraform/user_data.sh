@@ -24,7 +24,7 @@ systemctl enable docker
 systemctl start docker
 
 # Wait until Docker is ready
-until systemctl is-active --quiet docker; do
+until docker info >/dev/null 2>&1; do
     echo "Waiting for Docker to start..."
     sleep 2
 done
@@ -37,7 +37,21 @@ echo "Docker is running."
 usermod -aG docker ec2-user
 
 # -----------------------------------------
-# 5. Clone the monitoring branch
+# 5. Install Docker Compose
+# -----------------------------------------
+mkdir -p /usr/local/lib/docker/cli-plugins
+
+curl -SL \
+  https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+
+chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+# Verify Docker Compose
+docker compose version
+
+# -----------------------------------------
+# 6. Clone monitoring branch
 # -----------------------------------------
 rm -rf /home/ec2-user/app
 
@@ -48,24 +62,27 @@ git clone \
   /home/ec2-user/app
 
 # -----------------------------------------
-# 6. Move into application directory
+# 7. Move into application directory
 # -----------------------------------------
 cd /home/ec2-user/app
 
 # -----------------------------------------
-# 7. Verify Docker Compose
+# 8. Verify required files
 # -----------------------------------------
-docker compose version
+test -f docker-compose.yml
+test -f prometheus.yml
+test -f Dockerfile
+
+echo "Required application files found."
 
 # -----------------------------------------
-# 8. Start CloudShift Store
-#    Prometheus
-#    Grafana
+# 9. Start everything
 # -----------------------------------------
 docker compose up -d --build
 
-# Show running containers
-
+# -----------------------------------------
+# 10. Show running containers
+# -----------------------------------------
 docker compose ps
 
 echo "-----------------------------------------"
