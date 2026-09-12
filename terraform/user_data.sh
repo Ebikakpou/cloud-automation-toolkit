@@ -7,42 +7,70 @@ exec > >(tee /var/log/cloudshift-user-data.log | logger -t cloudshift-user-data)
 
 echo "Starting CloudShift Store provisioning..."
 
-# Update packages
+# -----------------------------------------
+# 1. Update packages
+# -----------------------------------------
 dnf update -y
 
-# Install Docker and Git automatically
+# -----------------------------------------
+# 2. Install Docker and Git
+# -----------------------------------------
 dnf install -y docker git
 
-# Start Docker automatically
+# -----------------------------------------
+# 3. Start Docker
+# -----------------------------------------
 systemctl enable docker
 systemctl start docker
 
-# Allow ec2-user to use Docker
+# Wait until Docker is ready
+until systemctl is-active --quiet docker; do
+    echo "Waiting for Docker to start..."
+    sleep 2
+done
+
+echo "Docker is running."
+
+# -----------------------------------------
+# 4. Allow ec2-user to use Docker
+# -----------------------------------------
 usermod -aG docker ec2-user
 
-# Clone the application repository
+# -----------------------------------------
+# 5. Clone the monitoring branch
+# -----------------------------------------
+rm -rf /home/ec2-user/app
+
 git clone \
+  -b monitoring-logging \
+  --single-branch \
   https://github.com/Ebikakpou/cloud-automation-toolkit.git \
   /home/ec2-user/app
 
-# Move into the application directory
+# -----------------------------------------
+# 6. Move into application directory
+# -----------------------------------------
 cd /home/ec2-user/app
 
-# Build the Docker image automatically
-docker build -t cloudshift-store:v1.3.0 .
+# -----------------------------------------
+# 7. Verify Docker Compose
+# -----------------------------------------
+docker compose version
 
-# Remove an old container if one exists
-docker rm -f cloudshift-store || true
+# -----------------------------------------
+# 8. Start CloudShift Store
+#    Prometheus
+#    Grafana
+# -----------------------------------------
+docker compose up -d --build
 
-# Start the application automatically
-docker run -d \
-  --name cloudshift-store \
-  --restart unless-stopped \
-  -p 80:5000 \
-  -e PROVISIONED_BY=terraform \
-  -e ENVIRONMENT="${environment}" \
-  -e APP_VERSION=v1.3.0 \
-  -e ACCENT_COLOR="#e8772d" \
-  cloudshift-store:v1.3.0
+# Show running containers
 
-echo "CloudShift Store provisioning completed successfully!"
+docker compose ps
+
+echo "-----------------------------------------"
+echo "CloudShift Store provisioning completed!"
+echo "CloudShift Store: http://EC2_PUBLIC_IP"
+echo "Prometheus:       http://EC2_PUBLIC_IP:9090"
+echo "Grafana:          http://EC2_PUBLIC_IP:3000"
+echo "-----------------------------------------"
