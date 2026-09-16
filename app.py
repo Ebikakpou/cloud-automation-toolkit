@@ -39,10 +39,13 @@ import signal
 import socket
 import sys
 import time
+from urllib import response
 import urllib.request
 from datetime import datetime, timezone
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, Response
+from flask import Flask, Response, jsonify, render_template
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 logging.basicConfig(
     stream=sys.stdout,
@@ -52,6 +55,16 @@ logging.basicConfig(
 log = logging.getLogger("cloudshift-store")
 
 app = Flask(__name__)
+
+REQUEST_COUNT = Counter(
+"cloudshift_http_requests_total", "Total HTTP requests received", ["path", "status"]
+)
+REQUEST_LATENCY = Histogram(
+"cloudshift_request_latency_seconds", "Request latency in seconds", ["path"]
+)
+UPTIME_GAUGE = Gauge(
+"cloudshift_pod_uptime_seconds", "Seconds since this process started"
+)
 
 PROCESS_START = time.time()
 
@@ -130,6 +143,9 @@ def pod_uptime_seconds() -> int:
 
 @app.after_request
 def _log_request(response):
+    latency = time.time() - getattr(request, "_start_time", time.time())
+    REQUEST_LATENCY.labels(path=request.path).observe(latency)
+    REQUEST_COUNT.labels(path=request.path, status=response.status_code).inc()
     log.info("request path=%s status=%s pod=%s", request.path, response.status_code, POD_NAME)
     return response
 
@@ -218,20 +234,36 @@ def infra():
         on_ec2=INSTANCE_ID != "not-on-ec2",
     )
 
-
 @app.route("/crash")
 def crash():
     """Disabled unless DEMO_MODE=true. See the Kubernetes Basics /
-    Advanced Kubernetes lecture notes for the full explanation — this
-    behaves identically to the version taught there."""
+    Advanced Kubernetes lecture notes for the full explanation —
+    this behaves identically to the version taught there."""
     if not DEMO_MODE:
-        return jsonify(error="disabled: set DEMO_MODE=true to enable this demo endpoint"), 403
-    log.warning("crash endpoint triggered on pod=%s — killing container", POD_NAME)
+        return jsonify(
+            error="disabled: set DEMO_MODE=true to enable this demo endpoint"
+        ), 403
+
+    log.warning(
+        "crash endpoint triggered on pod=%s — killing container",
+        POD_NAME
+    )
+
     if RUNNING_UNDER_GUNICORN:
         os.kill(os.getppid(), signal.SIGKILL)
     else:
         os._exit(1)
+
     return jsonify(status="crashing"), 200
+
+
+@app.route("/metrics")
+def metrics():
+    UPTIME_GAUGE.set(pod_uptime_seconds())
+    return Response(
+        generate_latest(),
+        mimetype=CONTENT_TYPE_LATEST
+    )
 
 
 if __name__ == "__main__":
