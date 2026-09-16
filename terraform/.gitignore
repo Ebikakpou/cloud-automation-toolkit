@@ -1,7 +1,3 @@
-# Never commit these. terraform.tfstate can contain sensitive values in
-# plain text (the same lesson as Secrets, two classes ago), and
-# terraform.tfvars is specific to your own AWS account.
-
 .terraform/
 .terraform.lock.hcl
 terraform.tfstate

@@ -13,7 +13,7 @@ dnf update -y
 # Install Docker and Git automatically
 dnf install -y docker git
 
-# Start Docker and enable it after reboot
+# Start Docker automatically
 systemctl enable docker
 systemctl start docker
 
@@ -21,8 +21,6 @@ systemctl start docker
 usermod -aG docker ec2-user
 
 # Clone the application repository
-rm -rf /home/ec2-user/app
-
 git clone \
   https://github.com/Ebikakpou/cloud-automation-toolkit.git \
   /home/ec2-user/app
