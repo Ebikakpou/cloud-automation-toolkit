@@ -1,128 +1,1118 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CloudShift Status — {{ pod_name }}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?
-family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:w
-ght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelia Heights Academy | Prestigious Secondary Boarding School</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles & Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e1b4b',
+                            900: '#0f172a',
+                            950: '#090d16',
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        },
+                        emerald: {
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-overlay {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.90) 100%);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d97706;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
+    </style>
 </head>
-<body>
-<header class="topbar">
-<div class="wrap topbar-inner">
-<div class="brand">
-<span class="brand-mark">CS</span>
-<span class="brand-name">CloudShift<span class="brand-inc">Inc.</span></span>
-</div>
-<div class="brand-tag">Internal Status Dashboard &middot; DevOps Class Demo</div>
-</div>
-</header>
-<main class="wrap">
-<section class="hero">
-<p class="eyebrow">This page is served by one running pod &mdash; refresh it a few ti
-mes</p>
-<h1>Who's answering right now?</h1>
-<p class="lede">
-Every field below is read live from <em>this exact process</em>. Behind a Kubernete
-s
-Service, hit refresh a handful of times and watch <span class="hl">POD NAME</span>
-change &mdash;
-that's the Service load-balancing you across replicas.
-</p>
-<div class="terminal">
-<div class="terminal-bar">
-<span class="dot dot-live"></span>
-<span class="terminal-label">cloudshift-web &mdash; live readout</span>
-<span class="terminal-time">{{ now }}</span>
-</div>
-<div class="terminal-body">
-<div class="row">
-<span class="key">pod_name</span>
-<span class="val val-accent">{{ pod_name }}</span>
-</div>
-<div class="row">
-<span class="key">pod_ip</span>
-<span class="val">{{ pod_ip }}</span>
-</div>
-<div class="row">
-<span class="key">pod_uptime</span>
-<span class="val" id="uptime" data-start="{{ uptime }}">{{ uptime }}s</span>
-</div>
-<div class="row">
-<span class="key">app_version</span>
-<span class="val">{{ version }}</span>
-</div>
-<div class="row">
-<span class="key">flask_env</span>
-<span class="val">{{ env }}</span>
-</div>
-<div class="row">
-<span class="key">redis_host</span>
-<span class="val">{{ redis_host }}</span>
-</div>
-<div class="row row-cursor">
-<span class="prompt">$</span>
-<span class="cursor">&nbsp;</span>
-</div>
-</div>
-</div>
-</section>
-<section class="concepts">
-<div class="concept-card">
-<span class="tag tag-orange">Self-healing</span>
-<h3>Kill this pod on purpose</h3>
-<p>
-<code>/crash</code> ends this process instantly. Run this with plain
-<code>docker run</code> and the app stays dead. Run it under the Deployment
-in <code>k8s/deployment.yaml</code> and Kubernetes restarts it within seconds &md
+<body class="bg-slate-900 text-slate-100 font-sans antialiased selection:bg-amber-500 selection:text-navy-900">
 
-ash;
+    <!-- HEADER / NAVIGATION BAR -->
+    <header id="main-header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300 glass-header border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-3 group">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                        <div class="w-full h-full bg-navy-900 rounded-[10px] flex items-center justify-center">
+                            <i class="fa-solid me-0 fa-shield-halved text-amber-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="font-serif text-xl font-bold tracking-tight text-white block">AURELIA HEIGHTS</span>
+                        <span class="text-[10px] font-semibold tracking-widest text-amber-400 uppercase block -mt-1">Boarding Academy</span>
+                    </div>
+                </a>
 
-refresh after ~10s and <code>pod_uptime</code> will read close to zero again.
-</p>
-<a class="crash-btn" href="/crash">Crash this pod &rarr;</a>
-</div>
-<div class="concept-card">
-<span class="tag tag-blue">Scaling</span>
-<h3>One pod becomes several</h3>
-<p>
-<code>kubectl scale deployment/cloudshift-web --replicas=5</code> turns this
-single process into five identical ones. The Service in front of them doesn't
-change &mdash; it just has more pods to hand traffic to.
-</p>
-<a class="ghost-btn" href="/healthz">View /healthz &rarr;</a>
-</div>
-<div class="concept-card">
-<span class="tag tag-green">Config</span>
-<h3>Nothing here is hardcoded</h3>
-<p>
-<code>redis_host</code> and <code>flask_env</code> above come from a
-<strong>ConfigMap</strong>, not from this file. Change the ConfigMap, restart
-the rollout, and every pod picks up the new values &mdash; no rebuild required.
-</p>
-<a class="ghost-btn" href="/config">View /config &rarr;</a>
-</div>
-</section>
-<section class="footnote">
-<p>
-Built for the CloudShift Inc. DevOps class &middot; Facilitator: Ebika Kpou &middot
-;
-continuation of the Docker &amp; Compose project onto Kubernetes.
-</p>
-</section>
-</main>
-<script>
-// Ticks the on-page uptime counter once per second, purely cosmetic —
-// the server-rendered value is the one that actually resets after a crash.
-const el = document.getElementById('uptime');
-let seconds = parseInt(el.dataset.start, 10) || 0;
-setInterval(() => {
-seconds += 1;
-el.textContent = seconds + 's';
-}, 1000);
-</script>
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="#about" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">About Us</a>
+                    <a href="#academics" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">Academics</a>
+                    <a href="#boarding" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">Boarding Life</a>
+                    <a href="#campus" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">Campus Tour</a>
+                    <a href="#admissions" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">Admissions</a>
+                    <a href="#calculator" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">Calculator</a>
+                    <a href="#events" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">Events</a>
+                    <a href="#contact" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">Contact</a>
+                </nav>
+
+                <!-- Header Actions -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <button onclick="openApplyModal()" class="relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-navy-900 bg-amber-400 rounded-full overflow-hidden transition-all duration-300 hover:bg-amber-300 shadow-md shadow-amber-500/20 hover:scale-105">
+                        <i class="fa-solid fa-paper-plane mr-2 text-xs"></i> Apply Now
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none" aria-label="Toggle Menu">
+                        <i id="menu-icon" class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-navy-900/95 backdrop-blur-xl border-b border-slate-800 transition-all">
+            <div class="px-4 pt-3 pb-6 space-y-2">
+                <a href="#about" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">About Us</a>
+                <a href="#academics" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">Academics</a>
+                <a href="#boarding" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">Boarding Life</a>
+                <a href="#campus" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">Campus Tour</a>
+                <a href="#admissions" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">Admissions</a>
+                <a href="#calculator" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">Cost Calculator</a>
+                <a href="#events" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">News & Events</a>
+                <a href="#contact" class="mobile-link block px-3 py-2.5 rounded-lg text-base font-medium text-slate-200 hover:bg-slate-800 hover:text-amber-400">Contact Us</a>
+                <div class="pt-4">
+                    <button onclick="openApplyModal()" class="w-full py-3 bg-amber-400 text-navy-900 font-bold rounded-xl text-center shadow-lg hover:bg-amber-300">
+                        Apply Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden bg-navy-950">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=2000&q=80" alt="Aurelia Heights Campus" class="w-full h-full object-cover object-center scale-105 animate-pulse" style="animation-duration: 20s;" />
+            <div class="absolute inset-0 hero-overlay"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+            <div class="max-w-3xl">
+                <!-- Badge -->
+                <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs sm:text-sm font-semibold mb-6 backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                    <span>Admissions Open for 2027/2028 Academic Session</span>
+                </div>
+
+                <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white leading-tight tracking-tight mb-6">
+                    Nurturing Tomorrow's <span class="text-gradient-gold">Global Leaders</span> in Excellence
+                </h1>
+
+                <p class="text-lg sm:text-xl text-slate-300 font-light mb-8 leading-relaxed max-w-2xl">
+                    Welcome to Aurelia Heights Academy. We offer an extraordinary secondary boarding experience blending rigorous academic standards, world-class pastoral care, and modern holistic development.
+                </p>
+
+                <!-- Dual CTAs -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-14">
+                    <button onclick="openApplyModal()" class="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-navy-900 font-bold rounded-xl transition-all duration-300 shadow-xl shadow-amber-500/20 flex items-center justify-center space-x-3 text-base group">
+                        <span>Apply for 2027/2028</span>
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                    <a href="#campus" class="px-8 py-4 bg-slate-800/80 hover:bg-slate-700 text-white font-semibold rounded-xl border border-slate-700/80 backdrop-blur-md transition-all duration-300 flex items-center justify-center space-x-3 text-base">
+                        <i class="fa-solid fa-play text-amber-400 text-sm"></i>
+                        <span>Explore Campus Tour</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Statistics Counters -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-8 border-t border-slate-800/80">
+                <div class="bg-slate-900/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80">
+                    <div class="font-serif text-3xl sm:text-4xl font-bold text-amber-400 mb-1">100%</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">University Acceptance</div>
+                </div>
+                <div class="bg-slate-900/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80">
+                    <div class="font-serif text-3xl sm:text-4xl font-bold text-amber-400 mb-1">8 : 1</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">Student-Faculty Ratio</div>
+                </div>
+                <div class="bg-slate-900/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80">
+                    <div class="font-serif text-3xl sm:text-4xl font-bold text-amber-400 mb-1">60+</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">Acre Modern Campus</div>
+                </div>
+                <div class="bg-slate-900/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80">
+                    <div class="font-serif text-3xl sm:text-4xl font-bold text-amber-400 mb-1">35+</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">Clubs & Sports Teams</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT US SECTION -->
+    <section id="about" class="py-24 bg-slate-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Title Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">Our Legacy & Ethos</h2>
+                <p class="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">A Tradition of Intellectual & Moral Brilliance</p>
+                <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
+                    Founded with a vision to provide world-class boarding education, Aurelia Heights Academy combines academic rigor with character building, ensuring every student discovers their highest potential.
+                </p>
+            </div>
+
+            <!-- Grid Layout with Image and Highlights -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+                <div class="relative">
+                    <div class="relative z-10 rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80" alt="Students in library" class="w-full h-[450px] object-cover" />
+                    </div>
+                    <!-- Decorative Element -->
+                    <div class="absolute -bottom-6 -right-6 w-64 h-64 bg-amber-500/10 rounded-3xl -z-0 blur-2xl"></div>
+                    <div class="absolute -top-6 -left-6 w-48 h-48 bg-emerald-500/10 rounded-3xl -z-0 blur-2xl"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-2xl">
+                        <h3 class="font-serif text-2xl font-bold text-white mb-2">Our Mission</h3>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                            To empower students through an exemplary, well-rounded curriculum that fosters critical thinking, creative innovation, global consciousness, and unyielding integrity within a supportive boarding environment.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-2xl">
+                        <h3 class="font-serif text-2xl font-bold text-white mb-2">Our Vision</h3>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                            To be recognized globally as a premier secondary institution that produces confident, compassionate, and visionary leaders ready to shape a dynamic world.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Values Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl hover:border-amber-500/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-500 group-hover:text-navy-900 transition-all">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Academic Excellence</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">Instilling a relentless passion for inquiry, intellectual curiosity, and scholarly mastery across all disciplines.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl hover:border-amber-500/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-500 group-hover:text-navy-900 transition-all">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Uncompromising Integrity</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">Cultivating honesty, moral courage, accountability, and empathy in everyday actions and community life.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl hover:border-amber-500/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-500 group-hover:text-navy-900 transition-all">
+                        <i class="fa-solid fa-earth-americas"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Global Citizenship</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">Promoting cultural awareness, inclusivity, environmental stewardship, and a perspective that embraces diversity.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl hover:border-amber-500/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-500 group-hover:text-navy-900 transition-all">
+                        <i class="fa-solid fa-shield-heart"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Resilience & Growth</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">Encouraging grit, physical wellness, adaptability, and the confidence to turn challenges into lifelong strengths.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACADEMICS SECTION -->
+    <section id="academics" class="py-24 bg-navy-950 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">World-Class Curriculum</h2>
+                <p class="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">Designed for Future Scholars</p>
+                <p class="text-slate-400 text-base sm:text-lg">Our dual pathway academic framework enables students to excel in national and international examinations with ease.</p>
+            </div>
+
+            <!-- Program Tabs Selector -->
+            <div class="flex flex-wrap justify-center gap-3 mb-12" id="academic-tabs">
+                <button onclick="switchAcademicTab('junior')" id="tab-btn-junior" class="academic-tab-btn px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 bg-amber-500 text-navy-900 shadow-lg">
+                    Junior Secondary (Grades 7–9)
+                </button>
+                <button onclick="switchAcademicTab('senior')" id="tab-btn-senior" class="academic-tab-btn px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 bg-slate-800 text-slate-300 hover:bg-slate-700">
+                    Senior Secondary (Grades 10–12)
+                </button>
+                <button onclick="switchAcademicTab('stem')" id="tab-btn-stem" class="academic-tab-btn px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 bg-slate-800 text-slate-300 hover:bg-slate-700">
+                    STEM & Innovation Hub
+                </button>
+                <button onclick="switchAcademicTab('alevels')" id="tab-btn-alevels" class="academic-tab-btn px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 bg-slate-800 text-slate-300 hover:bg-slate-700">
+                    A-Levels & University Prep
+                </button>
+            </div>
+
+            <!-- Tab Content Container -->
+            <div class="bg-navy-900 border border-slate-800 rounded-3xl p-6 sm:p-10">
+                <!-- Junior Secondary -->
+                <div id="academic-content-junior" class="academic-content grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="inline-block px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-semibold rounded-md mb-4">Foundational Years</div>
+                        <h3 class="font-serif text-3xl font-bold text-white mb-4">Building Strong Academic Foundations</h3>
+                        <p class="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
+                            The Junior Secondary program focuses on conceptual clarity, creative exploration, and essential life skills. Students engage with fundamental sciences, literature, mathematics, foreign languages, and digital literacy.
+                        </p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Comprehensive inquiry-based learning framework
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Foreign languages: French, Spanish, & Mandarin options
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Dedicated study skills & personal development coaching
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-800">
+                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1000&q=80" alt="Junior Secondary Classroom" class="w-full h-80 object-cover" />
+                    </div>
+                </div>
+
+                <!-- Senior Secondary -->
+                <div id="academic-content-senior" class="academic-content hidden grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="inline-block px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-semibold rounded-md mb-4">Specialization Pathways</div>
+                        <h3 class="font-serif text-3xl font-bold text-white mb-4">Rigorous Advanced Academics</h3>
+                        <p class="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
+                            Senior Secondary students select specialized tracks across Sciences, Social Sciences, Arts, and Business Studies, preparing them for top global universities and competitive examinations.
+                        </p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Tailored learning pathways according to career aspirations
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> SAT, IGCSE, and National Board exam preparation
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Individualized mentorship from senior academic advisors
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-800">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=80" alt="Senior Secondary Students" class="w-full h-80 object-cover" />
+                    </div>
+                </div>
+
+                <!-- STEM & Innovation Hub -->
+                <div id="academic-content-stem" class="academic-content hidden grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="inline-block px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-semibold rounded-md mb-4">Future Readiness</div>
+                        <h3 class="font-serif text-3xl font-bold text-white mb-4">Robotics, Coding & Scientific Inquiry</h3>
+                        <p class="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
+                            Our state-of-the-art Innovation Hub equips students with practical skills in Artificial Intelligence, Robotics, 3D Design, Applied Physics, and Environmental Biotech.
+                        </p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Hands-on AI & Python programming modules
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Annual International Robotics Competitions
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Advanced Science Laboratories with high-grade instruments
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-800">
+                        <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80" alt="STEM Innovation Hub" class="w-full h-80 object-cover" />
+                    </div>
+                </div>
+
+                <!-- A-Levels & University Prep -->
+                <div id="academic-content-alevels" class="academic-content hidden grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="inline-block px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-semibold rounded-md mb-4">Pre-University Program</div>
+                        <h3 class="font-serif text-3xl font-bold text-white mb-4">Gateway to World Premier Universities</h3>
+                        <p class="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
+                            Designed for high achievers, our A-Levels program offers intense focus in chosen subjects alongside comprehensive university application counseling for Ivy League and Russell Group institutions.
+                        </p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Dedicated UCAS and Common App guidance counselors
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Internship placement programs during vacation periods
+                            </li>
+                            <li class="flex items-center text-slate-300 text-sm">
+                                <i class="fa-solid fa-circle-check text-amber-400 mr-3"></i> Mock interviews and scholarship preparation workshops
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-800">
+                        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1000&q=80" alt="Graduation and University Prep" class="w-full h-80 object-cover" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BOARDING LIFE EXPERIENCE SECTION -->
+    <section id="boarding" class="py-24 bg-slate-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">A Home Away From Home</h2>
+                <p class="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">World-Class Boarding Facilities</p>
+                <p class="text-slate-400 text-base sm:text-lg">Life at Aurelia Heights is designed to foster independence, deep friendships, leadership, and emotional wellbeing.</p>
+            </div>
+
+            <!-- Feature Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Card 1 -->
+                <div class="bg-navy-900 border border-slate-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80" alt="Luxurious Dormitories" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy-900 to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-serif text-xl font-bold text-white mb-3">Modern Dormitories & Living</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-4">Comfortable, air-conditioned twin and single occupancy suites with dedicated study desks, high-speed Wi-Fi schedules, and 24/7 security.</p>
+                        <span class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Pastoral Support Included</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-navy-900 border border-slate-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80" alt="Dining & Nutrition" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy-900 to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-serif text-xl font-bold text-white mb-3">Gourmet Dining & Nutrition</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-4">Nutritious, chef-curated meals served five times daily. Customizable dietary options catering to religious, vegan, and medical needs.</p>
+                        <span class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Certified Nutritionists</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-navy-900 border border-slate-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80" alt="Pastoral Care & Health" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy-900 to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-serif text-xl font-bold text-white mb-3">Pastoral Care & Health Clinic</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-4">Dedicated Housemasters and Resident Nurses available 24/7. Fully equipped medical bay and professional wellness counseling team.</p>
+                        <span class="text-xs text-amber-400 font-semibold uppercase tracking-wider">24/7 Medical Care</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekend & Extracurricular Highlights -->
+            <div class="bg-gradient-to-r from-slate-800 to-navy-900 border border-slate-800 rounded-3xl p-8 lg:p-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="font-serif text-3xl font-bold text-white mb-4">Vibrant Weekend Programs</h3>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                            Weekends at Aurelia Heights are balanced with relaxation and adventure. Activities range from cultural museum trips, horseback riding excursions, movie nights in the auditorium, to intramural sports tournaments.
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-2 bg-slate-900/80 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold"><i class="fa-solid fa-horse text-amber-400 mr-2"></i>Equestrian Club</span>
+                            <span class="px-4 py-2 bg-slate-900/80 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold"><i class="fa-solid fa-swimming-pool text-amber-400 mr-2"></i>Olympic Swimming</span>
+                            <span class="px-4 py-2 bg-slate-900/80 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold"><i class="fa-solid fa-masks-theater text-amber-400 mr-2"></i>Drama Society</span>
+                            <span class="px-4 py-2 bg-slate-900/80 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold"><i class="fa-solid fa-campground text-amber-400 mr-2"></i>Outward Bound Camping</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://images.unsplash.com/photo-1517649763962-0c623266010b?auto=format&fit=crop&w=600&q=80" alt="Sports Excursion" class="rounded-xl shadow-lg border border-slate-700/50 h-40 w-full object-cover" />
+                        <img src="https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=600&q=80" alt="Auditorium Event" class="rounded-xl shadow-lg border border-slate-700/50 h-40 w-full object-cover" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CAMPUS TOUR & AMENITIES SECTION -->
+    <section id="campus" class="py-24 bg-navy-950 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">60-Acre State-of-the-Art Campus</h2>
+                <p class="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">Explore Our World-Class Amenities</p>
+                <p class="text-slate-400 text-base sm:text-lg">Designed to stimulate intellect, physical fitness, and creative expression in a secure environment.</p>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Item 1 -->
+                <div class="relative group overflow-hidden rounded-2xl border border-slate-800">
+                    <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80" alt="Modern Science Complex" class="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/40 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Academic Center</span>
+                        <h4 class="font-serif text-xl font-bold text-white mt-1">Science & Robotics Complex</h4>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="relative group overflow-hidden rounded-2xl border border-slate-800">
+                    <img src="https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80" alt="Olympic Swimming Pool" class="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/40 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Athletics</span>
+                        <h4 class="font-serif text-xl font-bold text-white mt-1">Olympic Aquatic Center</h4>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="relative group overflow-hidden rounded-2xl border border-slate-800">
+                    <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80" alt="Central Library" class="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/40 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Knowledge Hub</span>
+                        <h4 class="font-serif text-xl font-bold text-white mt-1">The Alexander Digital Library</h4>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="relative group overflow-hidden rounded-2xl border border-slate-800">
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80" alt="Performing Arts Center" class="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/40 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Arts & Culture</span>
+                        <h4 class="font-serif text-xl font-bold text-white mt-1">800-Seat Auditorium</h4>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="relative group overflow-hidden rounded-2xl border border-slate-800">
+                    <img src="https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?auto=format&fit=crop&w=800&q=80" alt="Sports Complex" class="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/40 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Sports Complex</span>
+                        <h4 class="font-serif text-xl font-bold text-white mt-1">Indoor Multi-Sport Arena</h4>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="relative group overflow-hidden rounded-2xl border border-slate-800">
+                    <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80" alt="Equestrian Arena" class="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/40 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Outdoors</span>
+                        <h4 class="font-serif text-xl font-bold text-white mt-1">Equestrian & Riding Grounds</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMISSIONS PROCESS SECTION -->
+    <section id="admissions" class="py-24 bg-slate-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">Join Our Community</h2>
+                <p class="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">4-Step Admissions Roadmap</p>
+                <p class="text-slate-400 text-base sm:text-lg">We welcome applications from exceptional young minds. Here is how you can begin your journey.</p>
+            </div>
+
+            <!-- Steps Timeline Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+                <!-- Step 1 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl relative">
+                    <div class="w-10 h-10 rounded-full bg-amber-500 text-navy-900 font-bold flex items-center justify-center text-lg mb-6 shadow-md shadow-amber-500/20">1</div>
+                    <h3 class="font-serif text-xl font-bold text-white mb-3">Online Application</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">Complete the online portal application form with previous academic transcripts and student credentials.</p>
+                    <span class="text-xs text-amber-400 font-medium">Deadline: November 30</span>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl relative">
+                    <div class="w-10 h-10 rounded-full bg-amber-500 text-navy-900 font-bold flex items-center justify-center text-lg mb-6 shadow-md shadow-amber-500/20">2</div>
+                    <h3 class="font-serif text-xl font-bold text-white mb-3">Entrance Assessment</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">Candidates sit for our entrance test assessing Mathematics, English, and Logic aptitude.</p>
+                    <span class="text-xs text-amber-400 font-medium">Online or On-Campus</span>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl relative">
+                    <div class="w-10 h-10 rounded-full bg-amber-500 text-navy-900 font-bold flex items-center justify-center text-lg mb-6 shadow-md shadow-amber-500/20">3</div>
+                    <h3 class="font-serif text-xl font-bold text-white mb-3">Student & Parent Interview</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">An interactive session with the Admissions Panel and Head of School to discuss shared values.</p>
+                    <span class="text-xs text-amber-400 font-medium">In-Person or Virtual</span>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl relative">
+                    <div class="w-10 h-10 rounded-full bg-amber-500 text-navy-900 font-bold flex items-center justify-center text-lg mb-6 shadow-md shadow-amber-500/20">4</div>
+                    <h3 class="font-serif text-xl font-bold text-white mb-3">Enrollment & Welcome</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">Successful applicants receive official acceptance letters, boarding house assignments, and orientation kit.</p>
+                    <span class="text-xs text-amber-400 font-medium">Session Begins Sept</span>
+                </div>
+            </div>
+
+            <!-- Brochure Callout -->
+            <div class="mt-16 text-center">
+                <button onclick="downloadBrochureSim()" class="inline-flex items-center space-x-3 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold border border-slate-700 transition-all">
+                    <i class="fa-solid fa-file-pdf text-amber-400 text-lg"></i>
+                    <span>Download 2027 Prospectus & Fees Brochure</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE FEE & COST CALCULATOR SECTION -->
+    <section id="calculator" class="py-24 bg-navy-950 border-t border-slate-800">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">Interactive Planning Tool</h2>
+                <p class="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">Tuition & Boarding Fee Calculator</p>
+                <p class="text-slate-400 text-sm sm:text-base">Estimate annual tuition and boarding investments based on grade level and optional enrichment programs.</p>
+            </div>
+
+            <div class="bg-navy-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
+                <form id="fee-calculator-form" class="space-y-6">
+                    <!-- Grade Level Selection -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-200 mb-2">Select Grade Level</label>
+                        <select id="calc-grade" onchange="calculateTuition()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-amber-400">
+                            <option value="18500">Junior Secondary (Grades 7–9) — $18,500 / year</option>
+                            <option value="21500">Senior Secondary (Grades 10–12) — $21,500 / year</option>
+                            <option value="24000">A-Levels & University Prep Track — $24,000 / year</option>
+                        </select>
+                    </div>
+
+                    <!-- Boarding Plan Option -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-200 mb-2">Boarding Option</label>
+                        <select id="calc-boarding" onchange="calculateTuition()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-amber-400">
+                            <option value="12000">Full Boarding (7 Days/Week) — $12,000 / year</option>
+                            <option value="8500">Weekly Boarding (Mon–Fri) — $8,500 / year</option>
+                            <option value="0">Day Scholar (No Boarding) — $0 / year</option>
+                        </select>
+                    </div>
+
+                    <!-- Checkbox Enrichments -->
+                    <div class="pt-2">
+                        <label class="block text-sm font-semibold text-slate-200 mb-3">Optional Enrichment Add-ons</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-center space-x-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700 cursor-pointer">
+                                <input type="checkbox" id="add-stem" value="1500" onchange="calculateTuition()" class="rounded border-slate-700 text-amber-500 focus:ring-amber-400 bg-slate-900" />
+                                <span class="text-sm text-slate-300">Robotics & AI Lab Pass (+$1,500)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700 cursor-pointer">
+                                <input type="checkbox" id="add-equestrian" value="2000" onchange="calculateTuition()" class="rounded border-slate-700 text-amber-500 focus:ring-amber-400 bg-slate-900" />
+                                <span class="text-sm text-slate-300">Equestrian Academy (+$2,000)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700 cursor-pointer">
+                                <input type="checkbox" id="add-music" value="1200" onchange="calculateTuition()" class="rounded border-slate-700 text-amber-500 focus:ring-amber-400 bg-slate-900" />
+                                <span class="text-sm text-slate-300">Private Conservatory Music Lessons (+$1,200)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700 cursor-pointer">
+                                <input type="checkbox" id="add-sat" value="800" onchange="calculateTuition()" class="rounded border-slate-700 text-amber-500 focus:ring-amber-400 bg-slate-900" />
+                                <span class="text-sm text-slate-300">SAT / Olympiad Prep Mastery (+$800)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Calculated Total Box -->
+                    <div class="mt-8 p-6 bg-slate-800/90 rounded-2xl border border-amber-500/30 flex flex-col sm:flex-row justify-between items-center">
+                        <div>
+                            <span class="text-xs uppercase tracking-widest text-slate-400 block font-semibold">Estimated Annual Investment</span>
+                            <span class="text-xs text-amber-400 font-medium">*Includes tuition, standard meals, campus facilities & medical care</span>
+                        </div>
+                        <div class="mt-4 sm:mt-0 font-serif text-4xl font-extrabold text-amber-400" id="total-fee-display">
+                            $30,500 <span class="text-sm font-sans font-normal text-slate-400">/ yr</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section class="py-24 bg-slate-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">Voices of Aurelia</h2>
+                <p class="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">What Parents & Alumni Say</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Quote 1 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl relative flex flex-col justify-between">
+                    <div>
+                        <div class="text-amber-400 text-xl mb-4">
+                            <i class="fa-solid fa-quote-left"></i>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6 italic">
+                            "Sending our daughter to Aurelia Heights was the best decision we ever made. The leadership skills, academic rigor, and supportive housemasters turned her into a confident Ivy-League admit."
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3 pt-4 border-t border-slate-800">
+                        <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-amber-400">DR</div>
+                        <div>
+                            <div class="text-sm font-bold text-white">Dr. Richard Vance</div>
+                            <div class="text-xs text-slate-400">Parent of Class of '25 Alumni</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quote 2 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl relative flex flex-col justify-between">
+                    <div>
+                        <div class="text-amber-400 text-xl mb-4">
+                            <i class="fa-solid fa-quote-left"></i>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6 italic">
+                            "The sense of brotherhood and teamwork I developed in the boarding house remains unmatched. Aurelia gave me both academic excellence and lifelong friends."
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3 pt-4 border-t border-slate-800">
+                        <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-amber-400">MA</div>
+                        <div>
+                            <div class="text-sm font-bold text-white">Michael Adebayo</div>
+                            <div class="text-xs text-slate-400">Head Boy, Class of '23 (Oxford Univ.)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quote 3 -->
+                <div class="bg-navy-900 border border-slate-800 p-8 rounded-2xl relative flex flex-col justify-between">
+                    <div>
+                        <div class="text-amber-400 text-xl mb-4">
+                            <i class="fa-solid fa-quote-left"></i>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6 italic">
+                            "As an international parent, safety and pastoral care were my top priorities. The 24/7 care and constant updates from staff gave our family complete peace of mind."
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3 pt-4 border-t border-slate-800">
+                        <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-amber-400">SK</div>
+                        <div>
+                            <div class="text-sm font-bold text-white">Sarah Jenkins</div>
+                            <div class="text-xs text-slate-400">Parent of Grade 10 Boarder</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWS & UPCOMING EVENTS SECTION -->
+    <section id="events" class="py-24 bg-navy-950 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
+                <div>
+                    <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">Campus Life & Updates</h2>
+                    <p class="font-serif text-3xl sm:text-5xl font-bold text-white">Upcoming Events & News</p>
+                </div>
+                <a href="#contact" class="mt-4 md:mt-0 text-sm font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center space-x-2">
+                    <span>View All Academic Calendar Events</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Event 1 -->
+                <div class="bg-navy-900 border border-slate-800 rounded-2xl p-6 hover:border-amber-500/40 transition-all">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 p-3 rounded-xl text-center min-w-[60px]">
+                            <span class="block font-bold text-xl leading-none">15</span>
+                            <span class="text-[10px] uppercase font-semibold">OCT</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase font-semibold">Admissions Event</span>
+                            <h4 class="font-serif text-lg font-bold text-white">Annual Autumn Open Day</h4>
+                        </div>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">Interactive guided tour of our facilities, classroom demonstrations, and session with Head of School.</p>
+                    <a href="#contact" class="text-xs font-semibold text-amber-400 hover:underline">Register to Attend &rarr;</a>
+                </div>
+
+                <!-- Event 2 -->
+                <div class="bg-navy-900 border border-slate-800 rounded-2xl p-6 hover:border-amber-500/40 transition-all">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 p-3 rounded-xl text-center min-w-[60px]">
+                            <span class="block font-bold text-xl leading-none">08</span>
+                            <span class="text-[10px] uppercase font-semibold">NOV</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase font-semibold">STEM Showcase</span>
+                            <h4 class="font-serif text-lg font-bold text-white">Inter-House Science Fair</h4>
+                        </div>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">Boarding students present innovative AI, renewable energy, and biotech solutions to guest judges.</p>
+                    <a href="#contact" class="text-xs font-semibold text-amber-400 hover:underline">Learn More &rarr;</a>
+                </div>
+
+                <!-- Event 3 -->
+                <div class="bg-navy-900 border border-slate-800 rounded-2xl p-6 hover:border-amber-500/40 transition-all">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 p-3 rounded-xl text-center min-w-[60px]">
+                            <span class="block font-bold text-xl leading-none">02</span>
+                            <span class="text-[10px] uppercase font-semibold">DEC</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase font-semibold">Arts & Drama</span>
+                            <h4 class="font-serif text-lg font-bold text-white">Winter Gala & Drama Production</h4>
+                        </div>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">Our annual theatrical masterpiece performed by academy students at the Central Performing Arts Center.</p>
+                    <a href="#contact" class="text-xs font-semibold text-amber-400 hover:underline">Reserve Tickets &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT US SECTION -->
+    <section id="contact" class="py-24 bg-slate-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Details -->
+                <div>
+                    <h2 class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-3">Get in Touch</h2>
+                    <p class="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">We'd Love to Hear From You</p>
+                    <p class="text-slate-400 text-base mb-8 leading-relaxed">
+                        Have questions regarding admissions, boarding arrangements, or campus visits? Reach out to our admissions team today.
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Campus Address</h4>
+                                <p class="text-slate-400 text-sm leading-relaxed">Aurelia Heights Drive, Crestview Hills, CA 90210, United States</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Admissions Hotline</h4>
+                                <p class="text-slate-400 text-sm">+1 (800) 555-AURELIA / +1 (555) 019-2831</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Email Inquiries</h4>
+                                <p class="text-slate-400 text-sm">admissions@aureliaheights.edu</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder Map Box -->
+                    <div class="mt-8 rounded-2xl overflow-hidden border border-slate-800 h-48 bg-slate-800 relative flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1000&q=80" alt="Map View" class="w-full h-full object-cover opacity-30" />
+                        <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                            <i class="fa-solid fa-map-pin text-3xl text-amber-400 mb-2"></i>
+                            <span class="text-sm font-semibold text-white">Aurelia Heights Main Campus</span>
+                            <span class="text-xs text-slate-400">Conveniently 40 Mins from International Airport</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Interactive Form -->
+                <div class="bg-navy-900 border border-slate-800 p-8 sm:p-10 rounded-3xl shadow-xl">
+                    <h3 class="font-serif text-2xl font-bold text-white mb-6">Send an Inquiry</h3>
+                    <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-300 mb-2">Parent / Guardian Name *</label>
+                            <input type="text" required placeholder="John Doe" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400" />
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase text-slate-300 mb-2">Email Address *</label>
+                                <input type="email" required placeholder="john@example.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase text-slate-300 mb-2">Phone Number *</label>
+                                <input type="tel" required placeholder="+1 (555) 000-0000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-300 mb-2">Child's Prospective Grade</label>
+                            <select class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400">
+                                <option>Grade 7 (Junior Secondary)</option>
+                                <option>Grade 8</option>
+                                <option>Grade 9</option>
+                                <option>Grade 10 (Senior Secondary)</option>
+                                <option>Grade 11</option>
+                                <option>Grade 12 / A-Levels</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-300 mb-2">Message or Inquiries</label>
+                            <textarea rows="4" placeholder="Tell us about your child's interests or request a private campus tour..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-amber-500 hover:bg-amber-400 text-navy-900 font-bold rounded-xl transition-colors shadow-lg shadow-amber-500/20 text-sm">
+                            Submit Inquiry
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-navy-950 border-t border-slate-800 pt-16 pb-12 text-slate-400 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <!-- Col 1 -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-shield-halved text-amber-400 text-2xl"></i>
+                        <span class="font-serif text-lg font-bold text-white">AURELIA HEIGHTS</span>
+                    </div>
+                    <p class="text-xs leading-relaxed text-slate-400">
+                        A premier secondary boarding academy dedicated to nurturing intellect, character, and global leadership in young scholars.
+                    </p>
+                    <!-- Social icons -->
+                    <div class="flex space-x-4 pt-2">
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-navy-900 flex items-center justify-center transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-navy-900 flex items-center justify-center transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-navy-900 flex items-center justify-center transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-navy-900 flex items-center justify-center transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2 -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4 text-xs uppercase tracking-wider">Quick Navigation</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#about" class="hover:text-amber-400 transition-colors">About Our Academy</a></li>
+                        <li><a href="#academics" class="hover:text-amber-400 transition-colors">Academic Curriculums</a></li>
+                        <li><a href="#boarding" class="hover:text-amber-400 transition-colors">Boarding Experience</a></li>
+                        <li><a href="#campus" class="hover:text-amber-400 transition-colors">Virtual Campus Tour</a></li>
+                        <li><a href="#calculator" class="hover:text-amber-400 transition-colors">Tuition Calculator</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3 -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4 text-xs uppercase tracking-wider">Admissions & Legal</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#admissions" class="hover:text-amber-400 transition-colors">Admissions Roadmap</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Scholarships & Financial Aid</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Terms of Enrollment</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Safeguarding Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4 -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4 text-xs uppercase tracking-wider">Subscribe to Newsletter</h4>
+                    <p class="text-xs text-slate-400 mb-3">Stay informed on upcoming open days and academic updates.</p>
+                    <form onsubmit="handleNewsletterSubmit(event)" class="space-y-2">
+                        <input type="email" required placeholder="Enter your email..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-400" />
+                        <button type="submit" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-navy-900 font-bold rounded-lg text-xs transition-colors">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800/80 pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500">
+                <p>&copy; 2027 Aurelia Heights Boarding Academy. All rights reserved.</p>
+                <p class="mt-2 sm:mt-0">Accredited by International Boarding Schools Association (IBSA)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- APPLY NOW MODAL -->
+    <div id="apply-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-md">
+        <div class="bg-navy-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl">
+            <button onclick="closeApplyModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-graduation-cap text-amber-400 text-4xl mb-2"></i>
+                <h3 class="font-serif text-2xl font-bold text-white">Start Your Application</h3>
+                <p class="text-xs text-slate-400 mt-1">Academic Session 2027 / 2028</p>
+            </div>
+
+            <form onsubmit="handleApplySubmit(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Student's Full Name *</label>
+                    <input type="text" required placeholder="E.g. Alexander Smith" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-amber-400" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Parent's Email Address *</label>
+                    <input type="email" required placeholder="parent@example.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-amber-400" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Applying For Year Level</label>
+                    <select class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-amber-400">
+                        <option>Junior Secondary (Grade 7)</option>
+                        <option>Junior Secondary (Grade 8-9)</option>
+                        <option>Senior Secondary (Grade 10)</option>
+                        <option>A-Levels Pathway</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-navy-900 font-bold rounded-xl transition-colors shadow-lg shadow-amber-500/20 text-sm mt-2">
+                    Submit Pre-Application
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Mobile Menu Toggle logic
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            if (mobileMenu.classList.contains('hidden')) {
+                menuIcon.className = 'fa-solid fa-bars text-2xl';
+            } else {
+                menuIcon.className = 'fa-solid fa-xmark text-2xl';
+            }
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIcon.className = 'fa-solid fa-bars text-2xl';
+            });
+        });
+
+        // Academic Program Switcher Tabs
+        function switchAcademicTab(tabKey) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.academic-content');
+            contents.forEach(el => el.classList.add('hidden'));
+
+            // Show target
+            const targetContent = document.getElementById(`academic-content-${tabKey}`);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+            }
+
+            // Reset tab styles
+            const tabBtns = document.querySelectorAll('.academic-tab-btn');
+            tabBtns.forEach(btn => {
+                btn.className = 'academic-tab-btn px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 bg-slate-800 text-slate-300 hover:bg-slate-700';
+            });
+
+            // Set active tab style
+            const activeBtn = document.getElementById(`tab-btn-${tabKey}`);
+            if (activeBtn) {
+                activeBtn.className = 'academic-tab-btn px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 bg-amber-500 text-navy-900 shadow-lg';
+            }
+        }
+
+        // Fee Calculator Logic
+        function calculateTuition() {
+            const gradeBase = parseInt(document.getElementById('calc-grade').value) || 0;
+            const boardingBase = parseInt(document.getElementById('calc-boarding').value) || 0;
+
+            let addOns = 0;
+            if (document.getElementById('add-stem').checked) addOns += parseInt(document.getElementById('add-stem').value);
+            if (document.getElementById('add-equestrian').checked) addOns += parseInt(document.getElementById('add-equestrian').value);
+            if (document.getElementById('add-music').checked) addOns += parseInt(document.getElementById('add-music').value);
+            if (document.getElementById('add-sat').checked) addOns += parseInt(document.getElementById('add-sat').value);
+
+            const total = gradeBase + boardingBase + addOns;
+            document.getElementById('total-fee-display').innerHTML = `$${total.toLocaleString()} <span class="text-sm font-sans font-normal text-slate-400">/ yr</span>`;
+        }
+
+        // Modal open/close handlers
+        function openApplyModal() {
+            document.getElementById('apply-modal').classList.remove('hidden');
+        }
+
+        function closeApplyModal() {
+            document.getElementById('apply-modal').classList.add('hidden');
+        }
+
+        // Simulated forms submit handlers
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            alert("Thank you for your inquiry! Our Admissions Team will contact you within 24 hours.");
+            e.target.reset();
+        }
+
+        function handleApplySubmit(e) {
+            e.preventDefault();
+            alert("Application received! A confirmation email with next steps has been dispatched to your inbox.");
+            closeApplyModal();
+            e.target.reset();
+        }
+
+        function handleNewsletterSubmit(e) {
+            e.preventDefault();
+            alert("Thank you for subscribing to Aurelia Heights Academy updates!");
+            e.target.reset();
+        }
+
+        function downloadBrochureSim() {
+            alert("Thank you! The 2027/2028 Prospectus & Fee Structure brochure download has been initiated.");
+        }
+    </script>
 </body>
 </html>
