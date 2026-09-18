@@ -1,5 +1,0 @@
-aws_region = "us-east-1"
-instance_type = "t2.micro"
-key_name = "your-keypair-name" # must already exist in your AWS account
-environment = "dev"
-project_name = "cloudshift-store"

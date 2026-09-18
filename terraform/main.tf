@@ -81,10 +81,12 @@ resource "aws_instance" "cloudshift_store" {
 
   user_data_replace_on_change = true
 
+
   tags = {
     Name        = "${var.project_name}-${var.environment}"
     ManagedBy   = "Terraform"
     Environment = var.environment
     project     = var.project_name
+
   }
 }
