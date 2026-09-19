@@ -90,57 +90,7 @@
                     </div>
                 </a>
 
-<<<<<<< HEAD
-refresh after ~10s and <code>pod_uptime</code> will read close to zero again.
-</p>
-<a class="crash-btn" href="/crash">Crash this pod &rarr;</a>
-</div>
-<div class="concept-card">
-<span class="tag tag-blue">Scaling</span>
-<h3>One pod becomes several</h3>
-<p>
-<code>kubectl scale deployment/cloudshift-web --replicas=5</code> turns this
-single process into five identical ones. The Service in front of them doesn't
-change &mdash; it just has more pods to hand traffic to.
-</p>
-<a class="ghost-btn" href="/healthz">View /healthz &rarr;</a>
-</div>
-<div class="concept-card">
-<span class="tag tag-green">Config</span>
-<h3>Nothing here is hardcoded</h3>
-<p>
-<code>redis_host</code> and <code>flask_env</code> above come from a
-<strong>ConfigMap</strong>, not from this file. Change the ConfigMap, restart
-the rollout, and every pod picks up the new values &mdash; no rebuild required.
-</p>
-<a class="ghost-btn" href="/config">View /config &rarr;</a>
-</div>
-</section>
-<section class="footnote">
-<p>
-Built for the CloudShift Inc. DevOps class &middot; Facilitator: Ebika Kpou &middot
-;
-continuation of the Docker &amp; Compose project onto Kubernetes.
-</p>
-</section>
-</main>
 
-
-
-
-
-
-<script>
-// Ticks the on-page uptime counter once per second, purely cosmetic —
-// the server-rendered value is the one that actually resets after a crash.
-const el = document.getElementById('uptime');
-let seconds = parseInt(el.dataset.start, 10) || 0;
-setInterval(() => {
-seconds += 1;
-el.textContent = seconds + 's';
-}, 1000);
-</script>
-=======
                 <!-- Desktop Navigation Links -->
                 <nav class="hidden lg:flex items-center space-x-8">
                     <a href="#about" class="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors">About Us</a>
