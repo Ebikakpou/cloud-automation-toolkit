@@ -56,7 +56,7 @@ docker compose version
 rm -rf /home/ec2-user/app
 
 git clone \
-  -b monitoring-logging \
+  -b main \
   --single-branch \
   https://github.com/Ebikakpou/cloud-automation-toolkit.git \
   /home/ec2-user/app
