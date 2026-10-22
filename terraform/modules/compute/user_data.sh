@@ -1,13 +1,20 @@
 #!/bin/bash
-set -euxo pipefail
+set -Eeuo pipefail
 
 exec > >(tee /var/log/cloudshift-user-data.log | logger -t cloudshift-user-data) 2>&1
 
-echo "Starting CloudShift Store Kubernetes provisioning..."
+trap 'echo "ERROR: provisioning failed at line ${LINENO}; check /var/log/cloudshift-user-data.log"' ERR
+
+echo "Starting CloudShift Store provisioning..."
 echo "Environment: ${environment}"
 
-dnf update -y
-dnf install -y docker git curl
+# Do not run a full system update during first-boot provisioning.
+# Avoid installing curl because Amazon Linux may already provide curl-minimal.
+dnf install -y docker git
+
+if ! command -v curl >/dev/null 2>&1; then
+  dnf install -y curl-minimal
+fi
 
 systemctl enable --now docker
 
@@ -16,25 +23,33 @@ until docker info >/dev/null 2>&1; do
   sleep 3
 done
 
-usermod -aG docker ec2-user
+usermod -aG docker ec2-user || true
 
-# Install a lightweight, full Kubernetes distribution.
-# Traefik is disabled because the application uses host port 80.
+# Install lightweight Kubernetes (K3s).
 curl -sfL https://get.k3s.io | \
   INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644 --disable=traefik" sh -
 
 systemctl enable --now k3s
 
-until k3s kubectl get nodes 2>/dev/null | grep -q ' Ready '; do
-  echo "Waiting for Kubernetes node to become Ready..."
+for attempt in $(seq 1 60); do
+  if k3s kubectl get nodes 2>/dev/null | grep -q ' Ready '; then
+    break
+  fi
+  echo "Waiting for Kubernetes node..."
   sleep 5
 done
 
+k3s kubectl get nodes | grep -q ' Ready ' || {
+  echo "Kubernetes node did not become Ready."
+  exit 1
+}
+
+# Download the application and its Kubernetes configuration.
 rm -rf /home/ec2-user/app
 
 git clone \
-  -b main \
-  --single-branch \
+  --depth 1 \
+  --branch main \
   https://github.com/Ebikakpou/cloud-automation-toolkit.git \
   /home/ec2-user/app
 
@@ -43,18 +58,16 @@ cd /home/ec2-user/app
 test -f Dockerfile
 test -f kubernetes/cloudshift-stack.yaml
 
-# Build the application image using Docker.
+# Build with Docker and import the image into K3s containerd.
 docker build -t cloudshift-store:latest .
-
-# Import the image into K3s/containerd.
 docker save cloudshift-store:latest -o /tmp/cloudshift-store.tar
 k3s ctr images import /tmp/cloudshift-store.tar
 rm -f /tmp/cloudshift-store.tar
 
-# Deploy the website and monitoring stack.
+# Deploy the application and monitoring stack.
 k3s kubectl apply -f kubernetes/cloudshift-stack.yaml
 
-# Wait for the workloads to become ready.
+# Wait for all deployments.
 k3s kubectl rollout status deployment/cloudshift-store --timeout=300s
 k3s kubectl rollout status deployment/prometheus --timeout=300s
 k3s kubectl rollout status deployment/grafana --timeout=300s
@@ -69,4 +82,4 @@ k3s kubectl get pods -o wide
 echo "===== KUBERNETES SERVICES ====="
 k3s kubectl get services
 
-echo "CloudShift Store Kubernetes provisioning completed."
+echo "CloudShift Store provisioning completed successfully."

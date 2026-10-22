@@ -1,22 +1,28 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloudshift
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
+  namespace: cloudshift
 data:
   prometheus.yml: |
     global:
       scrape_interval: 15s
 
     scrape_configs:
-      - job_name: "cloudshift-store"
+      - job_name: cloudshift-store
         static_configs:
           - targets: ["cloudshift-store:5000"]
 
-      - job_name: "prometheus"
+      - job_name: prometheus
         static_configs:
-          - targets: ["prometheus:9090"]
+          - targets: ["localhost:9090"]
 
-      - job_name: "node-exporter"
+      - job_name: node-exporter
         static_configs:
           - targets: ["node-exporter:9100"]
 ---
@@ -24,6 +30,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cloudshift-store
+  namespace: cloudshift
 spec:
   replicas: 1
   selector:
@@ -35,37 +42,38 @@ spec:
         app: cloudshift-store
     spec:
       containers:
-        - name: cloudshift-store
+        - name: app
           image: cloudshift-store:latest
           imagePullPolicy: Never
           ports:
             - name: http
               containerPort: 5000
               hostPort: 80
-          resources:
-            requests:
-              cpu: 100m
-              memory: 192Mi
-            limits:
-              cpu: 500m
-              memory: 384Mi
           readinessProbe:
             httpGet:
               path: /healthz
               port: 5000
-            initialDelaySeconds: 20
+            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /healthz
               port: 5000
-            initialDelaySeconds: 40
+            initialDelaySeconds: 30
             periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: cloudshift-store
+  namespace: cloudshift
 spec:
   selector:
     app: cloudshift-store
@@ -73,12 +81,12 @@ spec:
     - name: http
       port: 5000
       targetPort: 5000
-  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
+  namespace: cloudshift
 spec:
   replicas: 1
   selector:
@@ -92,14 +100,18 @@ spec:
       containers:
         - name: prometheus
           image: prom/prometheus:v2.53.0
-          args:
-            - "--config.file=/etc/prometheus/prometheus.yml"
-            - "--storage.tsdb.path=/prometheus"
-            - "--storage.tsdb.retention.time=2d"
           ports:
-            - name: http
+            - name: web
               containerPort: 9090
               hostPort: 9090
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+            - --storage.tsdb.retention.time=24h
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+              readOnly: true
           resources:
             requests:
               cpu: 100m
@@ -107,36 +119,28 @@ spec:
             limits:
               cpu: 500m
               memory: 384Mi
-          volumeMounts:
-            - name: prometheus-config
-              mountPath: /etc/prometheus
-              readOnly: true
-            - name: prometheus-data
-              mountPath: /prometheus
       volumes:
-        - name: prometheus-config
+        - name: config
           configMap:
             name: prometheus-config
-        - name: prometheus-data
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
+  namespace: cloudshift
 spec:
   selector:
     app: prometheus
   ports:
-    - name: http
-      port: 9090
+    - port: 9090
       targetPort: 9090
-  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
+  namespace: cloudshift
 spec:
   replicas: 1
   selector:
@@ -147,13 +151,11 @@ spec:
       labels:
         app: grafana
     spec:
-      securityContext:
-        fsGroup: 472
       containers:
         - name: grafana
           image: grafana/grafana:11.1.0
           ports:
-            - name: http
+            - name: web
               containerPort: 3000
               hostPort: 3000
           env:
@@ -161,6 +163,12 @@ spec:
               value: admin
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: admin
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 10
           resources:
             requests:
               cpu: 100m
@@ -168,30 +176,24 @@ spec:
             limits:
               cpu: 500m
               memory: 384Mi
-          volumeMounts:
-            - name: grafana-data
-              mountPath: /var/lib/grafana
-      volumes:
-        - name: grafana-data
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: grafana
+  namespace: cloudshift
 spec:
   selector:
     app: grafana
   ports:
-    - name: http
-      port: 3000
+    - port: 3000
       targetPort: 3000
-  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: node-exporter
+  namespace: cloudshift
 spec:
   replicas: 1
   selector:
@@ -202,25 +204,19 @@ spec:
       labels:
         app: node-exporter
     spec:
+      hostNetwork: true
       hostPID: true
       containers:
         - name: node-exporter
           image: prom/node-exporter:v1.8.2
           args:
-            - "--path.procfs=/host/proc"
-            - "--path.sysfs=/host/sys"
-            - "--path.rootfs=/host/root"
-            - "--web.listen-address=:9100"
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+            - --path.rootfs=/host
+            - --web.listen-address=:9100
           ports:
             - name: metrics
               containerPort: 9100
-          resources:
-            requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
           volumeMounts:
             - name: proc
               mountPath: /host/proc
@@ -229,31 +225,34 @@ spec:
               mountPath: /host/sys
               readOnly: true
             - name: root
-              mountPath: /host/root
+              mountPath: /host
               readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
       volumes:
         - name: proc
           hostPath:
             path: /proc
-            type: Directory
         - name: sys
           hostPath:
             path: /sys
-            type: Directory
         - name: root
           hostPath:
             path: /
-            type: Directory
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: node-exporter
+  namespace: cloudshift
 spec:
   selector:
     app: node-exporter
   ports:
-    - name: metrics
-      port: 9100
+    - port: 9100
       targetPort: 9100
-  type: ClusterIP
