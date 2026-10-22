@@ -1,0 +1,71 @@
+name: Deploy CloudShift Store
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudshift-store-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy latest main branch to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          set -euo pipefail
+
+          test -n "$EC2_HOST" || { echo "Missing EC2_HOST secret"; exit 1; }
+          test -n "$EC2_USER" || { echo "Missing EC2_USER secret"; exit 1; }
+          test -n "$EC2_SSH_KEY" || { echo "Missing EC2_SSH_KEY secret"; exit 1; }
+
+          mkdir -p ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/cloudshift_deploy_key
+          chmod 600 ~/.ssh/cloudshift_deploy_key
+
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          ssh \
+            -i ~/.ssh/cloudshift_deploy_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" 'sudo bash -s' <<'REMOTE'
+          set -euo pipefail
+
+          echo "Updating CloudShift Store from main..."
+          cd /home/ec2-user/app
+          git fetch origin main
+          git reset --hard origin/main
+
+          echo "Building the latest Docker image..."
+          docker build -t cloudshift-store:latest .
+
+          echo "Importing the image into K3s..."
+          docker save cloudshift-store:latest -o /tmp/cloudshift-store.tar
+          k3s ctr images import /tmp/cloudshift-store.tar
+          rm -f /tmp/cloudshift-store.tar
+
+          echo "Applying the Kubernetes configuration..."
+          k3s kubectl apply -f kubernetes/cloudshift-stack.yaml
+
+          echo "Restarting the website deployment..."
+          k3s kubectl rollout restart deployment/cloudshift-store
+          k3s kubectl rollout status deployment/cloudshift-store --timeout=300s
+
+          echo "Checking Kubernetes pods..."
+          k3s kubectl get pods -o wide
+
+          echo "CloudShift Store deployment completed successfully."
+          REMOTE

@@ -44,7 +44,7 @@ spec:
       containers:
         - name: app
           image: cloudshift-store:latest
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 5000
