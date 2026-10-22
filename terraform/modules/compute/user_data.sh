@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 exec > >(tee /var/log/cloudshift-user-data.log | logger -t cloudshift-user-data) 2>&1
 
-trap 'echo "ERROR: provisioning failed at line ${LINENO}; check /var/log/cloudshift-user-data.log"' ERR
+trap 'echo "ERROR: provisioning failed at line $${LINENO}; check /var/log/cloudshift-user-data.log"' ERR
 
 echo "Starting CloudShift Store provisioning..."
 echo "Environment: ${environment}"
