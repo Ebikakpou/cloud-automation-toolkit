@@ -1,5 +1,5 @@
 """
-CloudShift Store — app.py
+Zuri Market — app.py
 --------------------------
 This is the next upgrade of the app already in cloud-automation-toolkit.
 
@@ -7,7 +7,7 @@ Three classes ago it was a bare JSON endpoint. Two classes ago it proved
 Kubernetes self-healing, scaling, and config injection. Last class it
 became a storefront driven entirely by Helm values. This class the app
 itself barely changes — what changes is WHERE it runs: instead of a
-Kubernetes pod, CloudShift Store now runs on a real EC2 instance,
+Kubernetes pod, Zuri Market now runs on a real EC2 instance,
 provisioned by Terraform instead of a human clicking through the AWS
 console.
 
@@ -236,7 +236,7 @@ def storefront_assets(filename):
 @app.route("/api/store")
 def api_store():
     return jsonify(
-        name=os.environ.get("STORE_NAME", "CloudShift Store"),
+        name=os.environ.get("STORE_NAME", "Zuri Market"),
         totalProducts=len(ECOMMERCE_PRODUCTS),
     )
 
