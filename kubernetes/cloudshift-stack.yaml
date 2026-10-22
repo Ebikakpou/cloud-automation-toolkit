@@ -32,6 +32,8 @@ metadata:
   name: cloudshift-store
   namespace: cloudshift
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
