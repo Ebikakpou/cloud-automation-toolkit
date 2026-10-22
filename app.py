@@ -43,8 +43,7 @@ from urllib import response
 import urllib.request
 from datetime import datetime, timezone
 
-from flask import Flask, jsonify, render_template, request, Response
-from flask import Flask, Response, jsonify, render_template
+from flask import Flask, jsonify, render_template, request, Response, send_from_directory
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 logging.basicConfig(
@@ -164,27 +163,107 @@ PRODUCTS = [
 ]
 
 
+
+# --- React storefront and its demo product catalog ------------------------
+ECOMMERCE_PRODUCTS = [
+    {
+        "id": 1, "name": "Merino crew neck", "category": "apparel",
+        "price": 89, "stock": 12, "badge": None,
+        "description": "Lightweight 100% merino wool. Naturally temperature-regulating and itch-free.",
+        "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80",
+    },
+    {
+        "id": 2, "name": "Ceramic pour-over", "category": "home",
+        "price": 42, "stock": 8, "badge": "bestseller",
+        "description": "Hand-thrown ceramic dripper. Brews a clean, nuanced cup every time.",
+        "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500&q=80",
+    },
+    {
+        "id": 3, "name": "Trail running pack", "category": "gear",
+        "price": 115, "stock": 5, "badge": None,
+        "description": "10L hydration pack with chest straps and trekking pole holders.",
+        "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
+    },
+    {
+        "id": 4, "name": "Wireless earbuds", "category": "tech",
+        "price": 129, "stock": 20, "badge": "new",
+        "description": "Active noise cancellation, 28-hour battery life, IPX4 water resistance.",
+        "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80",
+    },
+    {
+        "id": 5, "name": "Linen throw blanket", "category": "home",
+        "price": 64, "stock": 15, "badge": None,
+        "description": "Stonewashed European linen. Gets softer with every wash.",
+        "image": "https://images.unsplash.com/photo-1600369671854-5a77c585b49e?w=500&q=80",
+    },
+    {
+        "id": 6, "name": "Bamboo water bottle", "category": "gear",
+        "price": 34, "stock": 30, "badge": None,
+        "description": "Double-walled stainless steel with a bamboo lid. Keeps cold 24hr, hot 12hr.",
+        "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500&q=80",
+    },
+    {
+        "id": 7, "name": "Canvas sneakers", "category": "apparel",
+        "price": 95, "stock": 9, "badge": "new",
+        "description": "Unbleached organic canvas upper, natural rubber sole. Vegan-friendly.",
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
+    },
+    {
+        "id": 8, "name": "Desk organiser set", "category": "tech",
+        "price": 55, "stock": 18, "badge": None,
+        "description": "Modular cork and steel tray system. Fits monitors up to 32 inches.",
+        "image": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=500&q=80",
+    },
+]
+
+
 @app.route("/")
 def storefront():
-    return render_template(
+    return send_from_directory(
+        os.path.join(app.root_path, "frontend", "dist"),
         "index.html",
-        products=PRODUCTS,
-        sale_banner_enabled=SALE_BANNER_ENABLED,
-        environment=ENVIRONMENT,
-        release_name=RELEASE_NAME,
-        app_version=APP_VERSION,
-        replica_count=REPLICA_COUNT,
-        accent_color=ACCENT_COLOR,
-        pod_name=POD_NAME,
-        pod_ip=POD_IP,
-        uptime=pod_uptime_seconds(),
-        redis_host=REDIS_HOST,
-        instance_id=INSTANCE_ID,
-        instance_type=INSTANCE_TYPE,
-        availability_zone=AVAILABILITY_ZONE,
-        provisioned_by=PROVISIONED_BY,
-        now=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
     )
+
+
+@app.route("/assets/<path:filename>")
+def storefront_assets(filename):
+    return send_from_directory(
+        os.path.join(app.root_path, "frontend", "dist", "assets"),
+        filename,
+    )
+
+
+@app.route("/api/store")
+def api_store():
+    return jsonify(
+        name=os.environ.get("STORE_NAME", "CloudShift Store"),
+        totalProducts=len(ECOMMERCE_PRODUCTS),
+    )
+
+
+@app.route("/api/products")
+def api_products():
+    category = request.args.get("category", "all").lower()
+    products = ECOMMERCE_PRODUCTS
+
+    if category != "all":
+        products = [
+            product for product in products
+            if product["category"] == category
+        ]
+
+    return jsonify(products)
+
+
+@app.route("/api/products/<int:product_id>")
+def api_product_detail(product_id):
+    product = next(
+        (item for item in ECOMMERCE_PRODUCTS if item["id"] == product_id),
+        None,
+    )
+    if product is None:
+        return jsonify(error="Product not found"), 404
+    return jsonify(product)
 
 
 @app.route("/healthz")
