@@ -61,11 +61,11 @@ jobs:
           k3s kubectl apply -f kubernetes/cloudshift-stack.yaml
 
           echo "Restarting the website deployment..."
-          k3s kubectl rollout restart deployment/cloudshift-store
-          k3s kubectl rollout status deployment/cloudshift-store --timeout=300s
+          k3s kubectl -n cloudshift rollout restart deployment/cloudshift-store
+          k3s kubectl -n cloudshift rollout status deployment/cloudshift-store --timeout=300s
 
           echo "Checking Kubernetes pods..."
-          k3s kubectl get pods -o wide
+          k3s kubectl -n cloudshift get pods -o wide
 
           echo "CloudShift Store deployment completed successfully."
           REMOTE
